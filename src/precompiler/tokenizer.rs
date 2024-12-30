@@ -1,7 +1,6 @@
 pub mod tokenizer {
     pub const TOKEN_SEPARATORS: [char; 21] = [' ', '/', '+', '-', '=', '_', '!', '&', '?', '*', '(', ')', '[', ']', '{', '}', '>', '<', ';', '.', '\n'];
-    #[derive(PartialEq)]
-    #[derive(Debug)]
+    #[derive(PartialEq, Debug, Clone)]
     pub enum Token {
         None,
         FieldName(String),
@@ -37,6 +36,10 @@ pub mod tokenizer {
         GlobalExtension, // global
         CurlyBracketOpen(i32), // {  i32 = connected closed curly bracket
         CurlyBracketClose(i32), // }  i32 = connected opened curly bracket
+        SquareBracketOpen(i32), // {  i32 = connected closed square bracket
+        SquareBracketClose(i32), // }  i32 = connected opened square bracket
+        RoundBracketOpen(i32), // {  i32 = connected closed round bracket
+        RoundBracketClose(i32), // }  i32 = connected opened round bracket
     }
     impl Token {
         pub fn variant(&self, check: &Token) -> bool {
@@ -89,6 +92,10 @@ pub mod tokenizer {
             else if tok == "." { ct = Token::Dot; }
             else if tok == "{" { ct = Token::CurlyBracketOpen(0); }
             else if tok == "}" { ct = Token::CurlyBracketClose(0); }
+            else if tok == "(" { ct = Token::RoundBracketOpen(0); }
+            else if tok == ")" { ct = Token::RoundBracketClose(0); }
+            else if tok == "[" { ct = Token::SquareBracketOpen(0); }
+            else if tok == "]" { ct = Token::SquareBracketClose(0); }
             else if tok.chars().all(char::is_alphabetic) { ct = Token::FieldName(String::from(tok)); }
             else if tok.chars().all(char::is_numeric) { ct = Token::IntLit(tok.parse().expect("Bad")); }
             if ct != Token::None {
@@ -106,6 +113,20 @@ pub mod tokenizer {
             } else if tklist[i].variant(&Token::CurlyBracketClose(0)) {
                 tklist[i] = Token::CurlyBracketClose(brc_stack[brc_stack.len()-1].1 as i32);
                 tklist[brc_stack[brc_stack.len()-1].1] = Token::CurlyBracketOpen(i as i32);
+                brc_stack.pop();
+            }
+            if tklist[i].variant(&Token::RoundBracketOpen(0)) {
+                brc_stack.push((Token::RoundBracketOpen(0), i));
+            } else if tklist[i].variant(&Token::RoundBracketClose(0)) {
+                tklist[i] = Token::RoundBracketClose(brc_stack[brc_stack.len()-1].1 as i32);
+                tklist[brc_stack[brc_stack.len()-1].1] = Token::RoundBracketOpen(i as i32);
+                brc_stack.pop();
+            }
+            if tklist[i].variant(&Token::SquareBracketOpen(0)) {
+                brc_stack.push((Token::SquareBracketOpen(0), i));
+            } else if tklist[i].variant(&Token::SquareBracketClose(0)) {
+                tklist[i] = Token::SquareBracketClose(brc_stack[brc_stack.len()-1].1 as i32);
+                tklist[brc_stack[brc_stack.len()-1].1] = Token::SquareBracketOpen(i as i32);
                 brc_stack.pop();
             }
         }
