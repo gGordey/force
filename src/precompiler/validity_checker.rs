@@ -14,9 +14,7 @@ pub mod validity_checker {
                         if  brc_stack.is_empty() ||
                             (!brc_stack[brc_stack.len()-1].variant(&Token::CurlyBracketOpen(0)) && tok.variant(&Token::CurlyBracketClose(0))) ||
                             (!brc_stack[brc_stack.len()-1].variant(&Token::RoundBracketOpen(0)) && tok.variant(&Token::RoundBracketClose(0))) ||
-                            (!brc_stack[brc_stack.len()-1].variant(&Token::SquareBracketOpen(0)) && tok.variant(&Token::SquareBracketClose(0)))
-                            {
-                                
+                            (!brc_stack[brc_stack.len()-1].variant(&Token::SquareBracketOpen(0)) && tok.variant(&Token::SquareBracketClose(0))) {
                                 return false;
                             }
                         brc_stack.pop();

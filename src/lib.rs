@@ -6,6 +6,7 @@ pub enum Datatypes {
     Byte,
     SByte,
     StrLit,
+    Empty,
 }
 pub mod precompiler {
     pub mod tokenizer;

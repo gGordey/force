@@ -32,6 +32,7 @@ pub mod tokenizer {
         Return, // ret
         VarInit, // var
         FnInit, // func
+        ResultType, // ->
         TypeSpec(crate::Datatypes),
         GlobalExtension, // global
         CurlyBracketOpen(i32), // {  i32 = connected closed curly bracket
@@ -80,7 +81,7 @@ pub mod tokenizer {
             else if tok == "sbyte" { ct = Token::TypeSpec(crate::Datatypes::SByte); }
             else if tok == "global" { ct = Token::GlobalExtension; }
             else if tok == "+" { if st[i+1] == "+" { ct = Token::Incriment; i += 1 }  else { ct = Token::MathPlus; } }
-            else if tok == "-" { if st[i+1] == "-" { ct = Token::Decriment; i += 1 }  else { ct = Token::MathMinus; } }
+            else if tok == "-" { if st[i+1] == "-" { ct = Token::Decriment; i += 1 } else if st[i+1] == ">" { ct = Token::ResultType} else { ct = Token::MathMinus; } }
             else if tok == "=" { if st[i+1] == "=" { ct = Token::LogicEqual; i += 1 }  else { ct = Token::MathEqual; } }
             else if tok == "*" { if st[i+1] == "*" { ct = Token::MathPower; i += 1 }  else { ct = Token::MathMultiply; } }
             else if tok == "&" { if st[i+1] == "&" { ct = Token::LogicAnd; i += 1 }  else { /* Syntax error here */ } }
